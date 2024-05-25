@@ -9,6 +9,10 @@ function countReducer(state, action) {
   }
 }
 
+// Kent C Dodds version:
+// const countReducerKent = (state, action) => ({...state, ...action})
+// TODO: #ask-artem - why are they so much different ?
+
 function Counter({initialCount = 0, step = 1}) {
   // 🐨 replace React.useState with React.useReducer.
   // 💰 React.useReducer(countReducer, initialCount)
@@ -16,7 +20,7 @@ function Counter({initialCount = 0, step = 1}) {
   // changes to the next two lines of code! Remember:
   // The 1st argument is called "state" - the current value of count
   // The 2nd argument is called "newState" - the value passed to setCount
-  const [state, setState] = React.useReducer(countReducer, {
+  const [state, setState] = React.useReducer(countReducerKent, {
     count: initialCount,
   })
 
