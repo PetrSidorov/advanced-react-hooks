@@ -9,8 +9,9 @@ function countReducer(state, action) {
   switch (action.type) {
     case 'INCREMENT':
       return {...state, count: action.step + state.count}
-    // default:
-    //   return {step: 'hello there'}
+    default: {
+      throw new Error(`Unsopperted actio type ${action.type}`)
+    }
   }
 }
 
