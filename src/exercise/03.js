@@ -5,13 +5,13 @@ import * as React from 'react'
 import {useContext, useState} from 'react'
 const CountContext = React.createContext()
 
-function useCount(context) {
-  const context = useContext(context)
-  if (!context) {
+function useConsumer(contextName) {
+  const context = useContext(contextName)
+  if (!contextName) {
     throw new Error('Context is not available')
   }
 
-  return context
+  return contextName
 }
 
 // 🐨 create your CountContext here with React.createContext
@@ -27,14 +27,14 @@ function CountProvider(props) {
 
 function CountDisplay() {
   // 🐨 get the count from useContext with the CountContext
-  const {count} = useCount(CountContext)
+  const {count} = useConsumer(CountContext)
   // const count = 0
   return <div>{`The current count is ${count}`}</div>
 }
 
 function Counter() {
   // 🐨 get the setCount from useConsumer with the CountContext
-  const {setCount} = useCount(CountContext)
+  const {setCount} = useConsumer(CountContext)
   const increment = () => setCount(c => c + 1)
   return <button onClick={increment}>Increment count</button>
 }
