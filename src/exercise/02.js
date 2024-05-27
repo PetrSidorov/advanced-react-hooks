@@ -31,18 +31,14 @@ function pokemonInfoReducer(state, action) {
   }
 }
 
-function useAsync(asyncCallback, initialState) {
+function useAsync(initialState) {
   const [state, dispatch] = React.useReducer(pokemonInfoReducer, {
     status: 'idle',
-    // 🐨 this will need to be "data" instead of "pokemon"
+    ...initialState,
     data: null,
     error: null,
-    ...initialState,
   })
-
-  React.useEffect(() => {
-    // 💰 this first early-exit bit is a little tricky, so let me give you a hint:
-    const promise = asyncCallback()
+  const runPromise = promise => {
     if (!promise) {
       return
     }
@@ -56,11 +52,16 @@ function useAsync(asyncCallback, initialState) {
         dispatch({type: 'rejected', error})
       },
     )
-    // 🐨 you'll accept dependencies as an array and pass that here.
-    // 🐨 because of limitations with ESLint, you'll need to ignore
-    // the react-hooks/exhaustive-deps rule. We'll fix this in an extra credit.
-  }, [asyncCallback])
-  return state
+  }
+
+  const run = React.useCallback(runPromise, [])
+
+  return {
+    data: state.data,
+    status: state.status,
+    error: state.error,
+    run,
+  }
 }
 
 function PokemonInfo({pokemonName}) {
@@ -69,28 +70,20 @@ function PokemonInfo({pokemonName}) {
   // 💰 If you want some help, here's the function signature (or delete this
   // comment really quick if you don't want the spoiler)!
 
-  // 🐨 here's how you'll use the new useAsync hook you're writing:
+  const {data, status, error, run} = useAsync({
+    status: pokemonName ? 'pending' : 'idle',
+  })
 
-  const asyncCallback = React.useCallback(() => {
+  React.useEffect(() => {
     if (!pokemonName) {
       return
     }
-    return fetchPokemon(pokemonName)
-  }, [pokemonName])
-
-  const state = useAsync(
-    asyncCallback,
-    {
-      status: 'idle',
-      // 🐨 this will need to be "data" instead of "pokemon"
-      data: null,
-      error: null,
-    },
-
-    [pokemonName],
-  )
-  // 🐨 this will change from "pokemon" to "data"
-  const {data, status, error} = state
+    // 💰 note the absence of `await` here. We're literally passing the promise
+    // to `run` so `useAsync` can attach it's own `.then` handler on it to keep
+    // track of the state of the promise.
+    const pokemonPromise = fetchPokemon(pokemonName)
+    run(pokemonPromise)
+  }, [pokemonName, run])
 
   switch (status) {
     case 'idle':
