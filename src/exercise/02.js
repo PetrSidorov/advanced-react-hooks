@@ -70,25 +70,25 @@ function PokemonInfo({pokemonName}) {
   // comment really quick if you don't want the spoiler)!
 
   // 🐨 here's how you'll use the new useAsync hook you're writing:
-  const useAsyncCallback = useCallback(
-    useAsync(
-      () => {
-        if (!pokemonName) {
-          return
-        }
-        return fetchPokemon(pokemonName)
-      },
-      {
-        status: 'idle',
-        // 🐨 this will need to be "data" instead of "pokemon"
-        data: null,
-        error: null,
-      },
-    ),
+
+  const asyncCallback = React.useCallback(() => {
+    if (!pokemonName) {
+      return
+    }
+    return fetchPokemon(pokemonName)
+  }, [pokemonName])
+
+  const state = useAsync(
+    asyncCallback,
+    {
+      status: 'idle',
+      // 🐨 this will need to be "data" instead of "pokemon"
+      data: null,
+      error: null,
+    },
+
     [pokemonName],
   )
-
-  const state = useAsyncCallback()
   // 🐨 this will change from "pokemon" to "data"
   const {data, status, error} = state
 
